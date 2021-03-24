@@ -16,6 +16,9 @@ spec:
         - name: workflow-controller
           image: argoproj/workflow-controller:v3.0.0
           securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
