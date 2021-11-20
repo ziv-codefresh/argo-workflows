@@ -1102,6 +1102,10 @@ spec:
                         required:
                         - key
                         type: object
+                      selector:
+                        items:
+                          type: string
+                        type: array
                     type: object
                 type: object
               templateDefaults:
@@ -6864,6 +6868,10 @@ spec:
                             required:
                             - key
                             type: object
+                          selector:
+                            items:
+                              type: string
+                            type: array
                         type: object
                     type: object
                   timeout:
@@ -13314,6 +13322,10 @@ spec:
                               required:
                               - key
                               type: object
+                            selector:
+                              items:
+                                type: string
+                              type: array
                           type: object
                       type: object
                     timeout:

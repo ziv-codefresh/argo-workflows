@@ -5787,6 +5787,10 @@ spec:
                               required:
                               - key
                               type: object
+                            selector:
+                              items:
+                                type: string
+                              type: array
                           type: object
                       type: object
                     timeout:

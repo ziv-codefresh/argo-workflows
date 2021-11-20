@@ -122,7 +122,7 @@ func (cm *Manager) TryAcquire(wf *wfv1.Workflow, nodeName string, syncLockRef *w
 		return false, false, "", fmt.Errorf("cannot acquire lock from nil Synchronization")
 	}
 
-	syncLockName, err := GetLockName(syncLockRef, wf.Namespace)
+	syncLockName, err := GetLockName(syncLockRef, wf.Namespace, wf.Labels)
 	if err != nil {
 		return false, false, "", fmt.Errorf("requested configuration is invalid: %w", err)
 	}
@@ -182,7 +182,7 @@ func (cm *Manager) Release(wf *wfv1.Workflow, nodeName string, syncRef *wfv1.Syn
 	defer cm.lock.Unlock()
 
 	holderKey := getHolderKey(wf, nodeName)
-	lockName, err := GetLockName(syncRef, wf.Namespace)
+	lockName, err := GetLockName(syncRef, wf.Namespace, wf.Labels)
 	if err != nil {
 		return
 	}

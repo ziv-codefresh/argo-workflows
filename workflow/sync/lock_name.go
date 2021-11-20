@@ -20,26 +20,28 @@ type LockName struct {
 	ResourceName string
 	Key          string
 	Kind         LockKind
+	Selectors    []string
 }
 
-func NewLockName(namespace, resourceName, lockKey string, kind LockKind) *LockName {
+func NewLockName(namespace, resourceName, lockKey string, kind LockKind, selectors []string, labels map[string]string) *LockName {
 	return &LockName{
 		Namespace:    namespace,
 		ResourceName: resourceName,
 		Key:          lockKey,
 		Kind:         kind,
+		Selectors:    selectors,
 	}
 }
 
-func GetLockName(sync *v1alpha1.Synchronization, namespace string) (*LockName, error) {
+func GetLockName(sync *v1alpha1.Synchronization, namespace string, labels map[string]string) (*LockName, error) {
 	switch sync.GetType() {
 	case v1alpha1.SynchronizationTypeSemaphore:
 		if sync.Semaphore.ConfigMapKeyRef != nil {
-			return NewLockName(namespace, sync.Semaphore.ConfigMapKeyRef.Name, sync.Semaphore.ConfigMapKeyRef.Key, LockKindConfigMap), nil
+			return NewLockName(namespace, sync.Semaphore.ConfigMapKeyRef.Name, sync.Semaphore.ConfigMapKeyRef.Key, LockKindConfigMap, sync.Semaphore.Selectors, labels), nil
 		}
 		return nil, fmt.Errorf("cannot get LockName for a Semaphore without a ConfigMapRef")
 	case v1alpha1.SynchronizationTypeMutex:
-		return NewLockName(namespace, sync.Mutex.Name, "", LockKindMutex), nil
+		return NewLockName(namespace, sync.Mutex.Name, "", LockKindMutex, nil, nil), nil // change it after verifying it works
 	default:
 		return nil, fmt.Errorf("cannot get LockName for a Sync of Unknown type")
 	}
