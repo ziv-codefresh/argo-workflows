@@ -21,6 +21,7 @@ type LockName struct {
 	Key          string
 	Kind         LockKind
 	Selectors    []string
+	Labels       map[string]string
 }
 
 func NewLockName(namespace, resourceName, lockKey string, kind LockKind, selectors []string, labels map[string]string) *LockName {
@@ -30,6 +31,7 @@ func NewLockName(namespace, resourceName, lockKey string, kind LockKind, selecto
 		Key:          lockKey,
 		Kind:         kind,
 		Selectors:    selectors,
+		Labels:       labels,
 	}
 }
 
@@ -72,10 +74,14 @@ func DecodeLockName(lockName string) (*LockName, error) {
 }
 
 func (ln *LockName) EncodeName() string {
-	if ln.Kind == LockKindMutex {
-		return ln.ValidateEncoding(fmt.Sprintf("%s/%s/%s", ln.Namespace, ln.Kind, ln.ResourceName))
+	selectors:=""
+	for _, selector := range ln.Selectors {
+		selectors= selectors+"/"+selector + ":" + ln.Labels[selector]
 	}
-	return ln.ValidateEncoding(fmt.Sprintf("%s/%s/%s/%s", ln.Namespace, ln.Kind, ln.ResourceName, ln.Key))
+	if ln.Kind == LockKindMutex {
+		return ln.ValidateEncoding(fmt.Sprintf("%s/%s/%s/%s", ln.Namespace, ln.Kind, ln.ResourceName, selectors))
+	}
+	return ln.ValidateEncoding(fmt.Sprintf("%s/%s/%s/%s%s", ln.Namespace, ln.Kind, ln.ResourceName, ln.Key, selectors))
 }
 
 func (ln *LockName) Validate() error {
